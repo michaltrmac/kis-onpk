@@ -21,6 +21,7 @@ class MyServer(BaseHTTPRequestHandler):
         self.wfile.write(bytes("\n".join([
             f'Host: {socket.gethostname()}',
             f'Time: {datetime.now()}',
+            f'Version: v1',
         ]) + '\n', 'utf-8'))
 
 if __name__ == "__main__":
