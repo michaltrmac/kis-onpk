@@ -1,0 +1,65 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: clone-build-push
+spec:
+#  serviceAccountName: pipeline-account
+  description: |
+    This pipeline clones a git repo, builds a Docker image with buildah and
+    pushes it to a registry
+  params:
+    - name: repo-url
+      type: string
+    - name: image-reference
+      type: string
+    - name: dockerfile
+      type: string
+    - name: context
+      type: string
+  workspaces:
+    - name: shared-data
+    - name: docker-credentials
+    - name: git-credentials
+  tasks:
+    - name: fetch-source
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shared-data
+        - name: ssh-directory
+          workspace: git-credentials
+      params:
+        - name: url
+          value: $(params.repo-url)
+    - name: build-push
+      runAfter: ["fetch-source"]
+      taskRef:
+        name: buildah
+      workspaces:
+        - name: source
+          workspace: shared-data
+        - name: dockerconfig
+          workspace: docker-credentials
+      params:
+        - name: IMAGE
+          value: $(params.image-reference)
+        - name: DOCKERFILE
+          value: $(params.dockerfile)
+        - name: CONTEXT
+          value: $(params.context)
+        - name: SKIP_PUSH
+          value: false
+        - name: FORMAT
+          value: docker
+#    - name: deploy-app
+##      runAfter: ["build-push"]
+#      taskSpec:
+#        serviceAccountName: pipeline-account
+#        steps:
+#          - image: kubernautslabs/helm-kubectl
+#            command: ["kubectl"]
+#            args:
+#              - "apply"
+#              - "-f"
+#              - "https://raw.githubusercontent.com/michaltrmac/kis-onpk/test/k8s/python-demo-app/20_deployment.yml"

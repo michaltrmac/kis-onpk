@@ -1,0 +1,35 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: clone-build-push-run-
+spec:
+#  serviceAccountName: pipeline-account
+  pipelineRef:
+    name: clone-build-push
+  podTemplate:
+    securityContext:
+      fsGroup: 65532
+  workspaces:
+    - name: shared-data
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Gi
+    - name: git-credentials
+      secret:
+        secretName: git-credentials
+    - name: docker-credentials
+      secret:
+        secretName: docker-credentials
+  params:
+    - name: repo-url
+      value: git@github.com:michaltrmac/kis-onpk.git
+    - name: image-reference
+      value: michaltrmac/onpk-python-app:1.0.0-test
+    - name: dockerfile
+      value: python-app/Dockerfile
+    - name: context
+      value: python-app

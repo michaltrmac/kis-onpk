@@ -3,14 +3,14 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: web
-  name: web
-  namespace: default
+    app: python-http-server
+  name: python-http-server
+  namespace: python-demo-app
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: web
+      app: python-http-server
   strategy:
     rollingUpdate:
       maxSurge: 25%
@@ -19,12 +19,12 @@ spec:
   template:
     metadata:
       labels:
-        app: web
+        app: python-http-server
     spec:
       containers:
         - image: gcr.io/google-samples/hello-app:1.0
           imagePullPolicy: IfNotPresent
-          name: hello-app
+          name: python-http-server
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
