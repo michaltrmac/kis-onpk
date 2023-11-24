@@ -3,12 +3,21 @@ kind: PipelineRun
 metadata:
   generateName: clone-build-push-run-
 spec:
-#  serviceAccountName: pipeline-account
+  serviceAccountName: pipeline-sa
   pipelineRef:
     name: clone-build-push
   podTemplate:
     securityContext:
       fsGroup: 65532
+  params:
+    - name: repo-url
+      value: git@github.com:michaltrmac/kis-onpk.git
+    - name: image-reference
+      value: michaltrmac/onpk-python-app:1.0.0
+    - name: dockerfile
+      value: python-app/Dockerfile
+    - name: context
+      value: python-app
   workspaces:
     - name: shared-data
       volumeClaimTemplate:
@@ -24,12 +33,3 @@ spec:
     - name: docker-credentials
       secret:
         secretName: docker-credentials
-  params:
-    - name: repo-url
-      value: git@github.com:michaltrmac/kis-onpk.git
-    - name: image-reference
-      value: michaltrmac/onpk-python-app:1.0.0-test
-    - name: dockerfile
-      value: python-app/Dockerfile
-    - name: context
-      value: python-app
