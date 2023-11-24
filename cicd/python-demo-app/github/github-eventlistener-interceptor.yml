@@ -61,24 +61,13 @@ spec:
   params:
     - name: gitrevision
     - name: gitrepositoryurl
-#  resourceTemplates:
-#    - apiVersion: tekton.dev/v1beta1
-#      kind: TaskRun
-#      metadata:
-#        generateName: github-run-
-#      spec:
-#        taskSpec:
-#          steps:
-#            - image: ubuntu
-#              script: |
-#                #! /bin/bash
-#                echo "Revision is : $(tt.params.gitrevision). RepoURL is $(tt.params.gitrepositoryurl)"
   resourcetemplates:
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
         generateName: simple-pipeline-run-
       spec:
+        serviceAccountName: pipeline-sa
         pipelineRef:
           name: clone-build-push
         podTemplate:
@@ -108,17 +97,3 @@ spec:
             value: python-app/Dockerfile
           - name: context
             value: python-app
-#        pipelineRef:
-#          name: simple-pipeline
-#        params:
-#          - name: message
-#            value: $(tt.params.message)
-#          - name: contenttype
-#            value: $(tt.params.contenttype)
-#          - name: git-revision
-#            value: $(tt.params.gitrevision)
-#          - name: git-url
-#            value: $(tt.params.gitrepositoryurl)
-#        workspaces:
-#          - name: git-source
-#            emptyDir: {}

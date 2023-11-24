@@ -22,9 +22,16 @@ spec:
         app: python-http-server
     spec:
       containers:
-        - image: gcr.io/google-samples/hello-app:1.0
+        - name: python-http-server
+          image: michaltrmac/onpk-python-app:1.0.0
           imagePullPolicy: IfNotPresent
-          name: python-http-server
+          env:
+            - name: PYTHONUNBUFFERED
+              value: "1"
+            - name: DOCKER_IMAGE
+              value: michaltrmac/onpk-python-app:1.0.0
+          ports:
+            - containerPort: 8080
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
